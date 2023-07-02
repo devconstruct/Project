@@ -1,7 +1,7 @@
 const express = require('express');
 const morgan = require('morgan');
 const path = require('path');
-const exphbs = require('express-handlebars');
+const { engine } = require('express-handlebars');
 
 //inicializamos la variable express
 const app = express();
@@ -9,14 +9,15 @@ const app = express();
 //Configuraciones generales
 app.set('port', process.env.PORT || 3000);
 //usaremos la carpeta views como principla de nuestros 
-exphbs.create(({
-    defaultLayout: 'main',
-    layoutsDir: path.join(app.get('views'), 'layouts'),
-    partialsDir: path.join(app.get('views'), 'partials'),
-    extname: '.hbs',
-    helpers: require('./lib/handlebars')
-  }))
-  app.set('view engine', '.hbs');
+app.set('views', path.join(__dirname, 'views'));
+app.engine('.hbs', engine({
+  defaultLayout: 'main',
+  layoutsDir: path.join(app.get('views'), 'layouts'),
+  partialsDir: path.join(app.get('views'), 'partials'),
+  extname: '.hbs',
+  helpers: require('./lib/handlebars')
+}));
+app.set('view engine', '.hbs');
 
 //MIDDLEWARES
 app.use(morgan('dev'));
